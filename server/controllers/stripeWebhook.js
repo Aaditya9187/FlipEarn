@@ -24,43 +24,41 @@ export const stripeWebhook = async(request, response)=>{
             try{
                   // Handle the event
                 switch (event.type) {
-                    case 'payment_intent.succeeded':
-                    const paymentIntent = event.data.object;
-                    const sessionList = await stripeInstance.checkout.sessions.list({
-                        payment_intent: paymentIntent.id
-                    })
-                    const session = sessionList.data[0];
-                    const {transactionId, appId} = session.metadata;
 
-                    if(appId === 'flipearn' && transactionId){
-                        const transaction = await prisma.transaction.update({
-                            where: {id: transactionId},
-                            data: {isPaid: true}
-                        })
-                        // Send New Credentials to the buyer using the email address 
+  case 'checkout.session.completed':
 
-                        await inngest.send({
-                            name: 'app/purchase',
-                            data: {transaction}
-                        })
-                        
+    const session = event.data.object;
+    const { transactionId, appId } = session.metadata;
 
-                        // Mark the listing as sold 
-                        await prisma.listing.update({
-                            where: {id: transaction.listingId},
-                            data: {status: 'sold'}
-                        })
-                        // Add the amount to the seller's wallet 
-                        await prisma.user.update({
-                            where: {id: transaction.ownerId},
-                            data: {earned: {increment: transaction.amount}}
-                        })
-                    }
+    if (appId === 'flipearn' && transactionId) {
 
-                    break;
-                    default:
-                    console.log(`Unhandled event type ${event.type}`);
-                }
+      const transaction = await prisma.transaction.update({
+        where: { id: transactionId },
+        data: { isPaid: true }
+      });
+
+      await inngest.send({
+        name: 'app/purchase',
+        data: { transaction }
+      });
+
+      await prisma.listing.update({
+        where: { id: transaction.listingId },
+        data: { status: 'sold' }
+      });
+
+      await prisma.user.update({
+        where: { id: transaction.ownerId },
+        data: { earned: { increment: transaction.amount } }
+      });
+
+    }
+
+    break;
+
+  default:
+    console.log(`Unhandled event type ${event.type}`);
+}
 
                 // Return a response to acknowledge receipt of the event
                 response.json({received: true});
