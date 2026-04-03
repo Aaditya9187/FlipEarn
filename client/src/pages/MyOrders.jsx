@@ -137,7 +137,7 @@ const MyOrders = () => {
                                         <ChevronDown className='size-4'/> View Credentials </>
                                     )}
                                 </button>
-                                <div className='text-xs text-gray-500. mt-2 text-right'>
+                                <div className='text-xs text-gray-500 mt-2 text-right'>
                                     <div>
                                         Credential Purchased: {format(new Date(order.createdAt),  "MMM dd yyyy")}
                                     </div>

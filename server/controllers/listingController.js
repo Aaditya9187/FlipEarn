@@ -436,7 +436,7 @@ export const purchaseAccount = async (req, res) => {
 
         })
 
-       const stripeInstance = new Stripe (process.env.STRIPE_SECRET_KEY);
+       const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
        const session = await stripeInstance.checkout.sessions.create({
             success_url: `${origin}/loading/my-orders`,
