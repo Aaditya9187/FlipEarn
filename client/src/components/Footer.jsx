@@ -31,7 +31,7 @@ const Footer = () => {
                     </div>
                 </div>
                 <p className="py-4 text-center border-t mt-6 border-slate-200">
-                    Copyright 2025 © fliperan All Right Reserved.
+                    Copyright 2025 © fliperan All Right Reserved - <a href="https://aaditya-dev.vercel.app" className="font-semibold underline"> Designed and Developed by Aaditya Chhatraliya</a>.
                 </p>
             </footer>
     );
